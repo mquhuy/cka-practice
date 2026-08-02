@@ -1,0 +1,30 @@
+# CKA Practice Cluster - Kind config
+# 3 nodes: 1 control-plane, 2 workers (matches exam topology)
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "role=control-plane"
+  - role: worker
+    labels:
+      zone: us-west-1a
+    kubeadmConfigPatches:
+      - |
+        kind: JoinConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "role=worker,zone=us-west-1a"
+  - role: worker
+    labels:
+      zone: us-west-1b
+    kubeadmConfigPatches:
+      - |
+        kind: JoinConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "role=worker,zone=us-west-1b"
