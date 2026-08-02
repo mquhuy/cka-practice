@@ -1,0 +1,424 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "category": "command",
+      "front": "Create a deployment with 3 replicas",
+      "back": "kubectl create deployment nginx --image=nginx --replicas=3"
+    },
+    {
+      "id": 2,
+      "category": "command",
+      "front": "Scale deployment to 5 replicas",
+      "back": "kubectl scale deployment nginx --replicas=5"
+    },
+    {
+      "id": 3,
+      "category": "command",
+      "front": "Update deployment image to nginx:1.28",
+      "back": "kubectl set image deployment/nginx nginx=nginx:1.28"
+    },
+    {
+      "id": 4,
+      "category": "command",
+      "front": "Rollback a deployment",
+      "back": "kubectl rollout undo deployment/nginx"
+    },
+    {
+      "id": 5,
+      "category": "command",
+      "front": "Check rollout history",
+      "back": "kubectl rollout history deployment/nginx"
+    },
+    {
+      "id": 6,
+      "category": "command",
+      "front": "Expose deployment as NodePort on port 30080",
+      "back": "kubectl expose deployment nginx --port=80 --type=NodePort --target-port=80"
+    },
+    {
+      "id": 7,
+      "category": "command",
+      "front": "Create a pod that runs once",
+      "back": "kubectl run busybox --image=busybox --restart=Never -- sleep 3600"
+    },
+    {
+      "id": 8,
+      "category": "command",
+      "front": "Get all pods across all namespaces",
+      "back": "kubectl get pods -A"
+    },
+    {
+      "id": 9,
+      "category": "command",
+      "front": "View logs from a previous pod instance",
+      "back": "kubectl logs <pod-name> --previous"
+    },
+    {
+      "id": 10,
+      "category": "command",
+      "front": "Exec into a pod shell",
+      "back": "kubectl exec -it <pod-name> -- sh"
+    },
+    {
+      "id": 11,
+      "category": "command",
+      "front": "Delete a pod forcefully",
+      "back": "kubectl delete pod <name> --force --grace-period=0"
+    },
+    {
+      "id": 12,
+      "category": "command",
+      "front": "Label a node",
+      "back": "kubectl label node <node-name> key=value"
+    },
+    {
+      "id": 13,
+      "category": "command",
+      "front": "Taint a node (repel pods)",
+      "back": "kubectl taint nodes <node-name> key=value:NoSchedule"
+    },
+    {
+      "id": 14,
+      "category": "command",
+      "front": "Remove a taint from a node",
+      "back": "kubectl taint nodes <node-name> key=value:NoSchedule-"
+    },
+    {
+      "id": 15,
+      "category": "command",
+      "front": "Cordon a node (mark unschedulable)",
+      "back": "kubectl cordon <node-name>"
+    },
+    {
+      "id": 16,
+      "category": "command",
+      "front": "Drain a node (evict all pods)",
+      "back": "kubectl drain <node-name> --ignore-daemonsets"
+    },
+    {
+      "id": 17,
+      "category": "command",
+      "front": "Uncordon a node",
+      "back": "kubectl uncordon <node-name>"
+    },
+    {
+      "id": 18,
+      "category": "command",
+      "front": "Create ConfigMap from literal",
+      "back": "kubectl create configmap my-config --from-literal=key=value"
+    },
+    {
+      "id": 19,
+      "category": "command",
+      "front": "Create secret from literal",
+      "back": "kubectl create secret generic my-secret --from-literal=password=pass"
+    },
+    {
+      "id": 20,
+      "category": "command",
+      "front": "Create Ingress with host routing",
+      "back": "kubectl create ingress my-ing --rule=\"host.example.com/*=svc:80\""
+    },
+    {
+      "id": 21,
+      "category": "command",
+      "front": "Check if user can list pods",
+      "back": "kubectl auth can-i list pods --as=jane"
+    },
+    {
+      "id": 22,
+      "category": "command",
+      "front": "Generate YAML without creating",
+      "back": "kubectl run nginx --image=nginx --dry-run=client -o yaml"
+    },
+    {
+      "id": 23,
+      "category": "command",
+      "front": "Create a CronJob",
+      "back": "kubectl create cj hello --schedule=\"*/5 * * * *\" --image=busybox -- echo hello"
+    },
+    {
+      "id": 24,
+      "category": "command",
+      "front": "View all events sorted by time",
+      "back": "kubectl get events -A --sort-by='.lastTimestamp'"
+    },
+    {
+      "id": 25,
+      "category": "concept",
+      "front": "What is a Pod?",
+      "back": "Smallest deployable unit in K8s. One or more containers sharing network/storage. Ephemeral - replaced when deleted."
+    },
+    {
+      "id": 26,
+      "category": "concept",
+      "front": "What is a Deployment?",
+      "back": "Manages replicated Pods. Provides updates, rollbacks, scaling. Declarative state management."
+    },
+    {
+      "id": 27,
+      "category": "concept",
+      "front": "What is a Service?",
+      "back": "Network endpoint for Pods. Stable IP/DNS. Load balances across Pods. Types: ClusterIP, NodePort, LoadBalancer."
+    },
+    {
+      "id": 28,
+      "category": "concept",
+      "front": "What's the difference: NodePort vs Service Port vs TargetPort?",
+      "back": "NodePort: external port on node. Service Port: port service listens on. TargetPort: port on container. Flow: NodePort → ServicePort → TargetPort → ContainerPort."
+    },
+    {
+      "id": 29,
+      "category": "concept",
+      "front": "What is a PersistentVolume (PV)?",
+      "back": "Storage resource in cluster. Represents piece of storage. Can be pre-provisioned or dynamic."
+    },
+    {
+      "id": 30,
+      "category": "concept",
+      "front": "What is a PersistentVolumeClaim (PVC)?",
+      "back": "User's request for storage. Binds to a PV. Pods use PVC to mount storage."
+    },
+    {
+      "id": 31,
+      "category": "concept",
+      "front": "What is a ConfigMap?",
+      "back": "Stores configuration data (key-value). Can be injected as env vars or mounted as files. Secrets for sensitive data."
+    },
+    {
+      "id": 32,
+      "category": "concept",
+      "front": "What is a Namespace?",
+      "back": "Virtual cluster within K8s. Resource isolation. Same names can exist in different namespaces."
+    },
+    {
+      "id": 33,
+      "category": "concept",
+      "front": "What is a NetworkPolicy?",
+      "back": "Controls traffic between Pods/Namesspaces. Whitelist model (deny all, allow specific). Ingress + egress rules."
+    },
+    {
+      "id": 34,
+      "category": "concept",
+      "front": "What is Ingress?",
+      "back": "HTTP/HTTPS route to Services. Host/path-based routing. Single IP for multiple services."
+    },
+    {
+      "id": 35,
+      "category": "concept",
+      "front": "What is nodeSelector?",
+      "back": "Hard requirement. Pod only schedules on nodes with matching labels. Simple scheduling."
+    },
+    {
+      "id": 36,
+      "category": "concept",
+      "front": "What is nodeAffinity?",
+      "back": "More expressive scheduling. requiredDuringScheduling (hard) vs preferredDuringScheduling (soft with weights)."
+    },
+    {
+      "id": 37,
+      "category": "concept",
+      "front": "What are Taints?",
+      "back": "Node property that repels Pods. Effect: NoSchedule, NoExecute, PreferNoSchedule. Only Pods with toleration can schedule."
+    },
+    {
+      "id": 38,
+      "category": "concept",
+      "front": "What are Tolerations?",
+      "back": "Pod property allowing it to schedule on tainted nodes. 'I can handle this taint.'"
+    },
+    {
+      "id": 39,
+      "category": "concept",
+      "front": "What is RBAC?",
+      "back": "Role-Based Access Control. ServiceAccount → Role(permissions) → RoleBinding. ClusterRole/ClusterRoleBinding for cluster-wide."
+    },
+    {
+      "id": 40,
+      "category": "concept",
+      "front": "What is a StatefulSet?",
+      "back": "Manages stateful apps. Stable network identity, stable storage, ordered deployment/scaling."
+    },
+    {
+      "id": 41,
+      "category": "concept",
+      "front": "What is cordon vs drain?",
+      "back": "Cordon: mark node unschedulable (no new pods). Drain: cordon + evict existing pods (for maintenance)."
+    },
+    {
+      "id": 42,
+      "category": "concept",
+      "front": "What is a DaemonSet?",
+      "back": "Ensures Pod runs on every node. Used for logging, monitoring. drain --ignore-daemonsets needed because DaemonSet pods can't be evicted."
+    },
+    {
+      "id": 43,
+      "category": "concept",
+      "front": "What is etcd?",
+      "back": "K8s key-value store. All cluster state stored here. Backup required for disaster recovery."
+    },
+    {
+      "id": 44,
+      "category": "concept",
+      "front": "What is kube-apiserver?",
+      "back": "K8s API frontend. All requests go through it. Authenticates, validates, stores in etcd."
+    },
+    {
+      "id": 45,
+      "category": "concept",
+      "front": "What is kube-scheduler?",
+      "back": "Decides which node runs a Pod. Considers resources, constraints, affinity, taints."
+    },
+    {
+      "id": 46,
+      "category": "concept",
+      "front": "What is kube-controller-manager?",
+      "back": "Runs controller processes. Node controller, Deployment controller, Endpoint controller, etc."
+    },
+    {
+      "id": 47,
+      "category": "concept",
+      "front": "What is kubelet?",
+      "back": "Agent on each node. Talks to apiserver. Ensures containers running as specified."
+    },
+    {
+      "id": 48,
+      "category": "concept",
+      "front": "What is kube-proxy?",
+      "back": "Network proxy on each node. Maintains network rules. Implements Service abstraction."
+    },
+    {
+      "id": 49,
+      "category": "concept",
+      "front": "What is kubeadm?",
+      "back": "Tool to create K8s clusters. init (control-plane), join (workers), token create."
+    },
+    {
+      "id": 50,
+      "category": "concept",
+      "front": "CKA exam format?",
+      "back": "2 hours, 15-20 tasks, 67% pass. All hands-on, no multiple choice. Graded by cluster state, not commands. Docs available."
+    },
+    {
+      "id": 51,
+      "category": "scenario",
+      "front": "Create a deployment 'web' with nginx:1.27, 3 replicas",
+      "back": "kubectl create deployment web --image=nginx:1.27 --replicas=3"
+    },
+    {
+      "id": 52,
+      "category": "scenario",
+      "front": "Expose web deployment as NodePort service on port 30080",
+      "back": "kubectl expose deployment web --port=80 --target-port=80 --type=NodePort --name=web-svc\nThen edit to set nodePort: 30080"
+    },
+    {
+      "id": 53,
+      "category": "scenario",
+      "front": "Scale web deployment to 5 replicas",
+      "back": "kubectl scale deployment web --replicas=5"
+    },
+    {
+      "id": 54,
+      "category": "scenario",
+      "front": "Update web image to nginx:1.28",
+      "back": "kubectl set image deployment/web nginx=nginx:1.28"
+    },
+    {
+      "id": 55,
+      "category": "scenario",
+      "front": "Rollback web deployment",
+      "back": "kubectl rollout undo deployment/web"
+    },
+    {
+      "id": 56,
+      "category": "scenario",
+      "front": "Create a multi-container pod: nginx + busybox (sleep 3600)",
+      "back": "kubectl run multitool --image=nginx --restart=Never --dry-run=client -o yaml | kubectl apply -f -\nThen edit YAML to add second container."
+    },
+    {
+      "id": 57,
+      "category": "scenario",
+      "front": "Node maintenance: cordon node1, drain it, uncordon after",
+      "back": "kubectl cordon node1\nkubectl drain node1 --ignore-daemonsets\n# work done\nkubectl uncordon node1"
+    },
+    {
+      "id": 58,
+      "category": "scenario",
+      "front": "Create NetworkPolicy in namespace 'dev' to deny all ingress",
+      "back": "Create netpol with podSelector: {}, policyTypes: [Ingress], ingress: [] (empty = deny all)"
+    },
+    {
+      "id": 59,
+      "category": "scenario",
+      "front": "Create PV 'pv-logs' 1Gi, hostPath /logs, access ReadWriteMany",
+      "back": "kubectl create pv pv-logs --capacity=1Gi --access-mode=ReadWriteMany --host-path=/logs"
+    },
+    {
+      "id": 60,
+      "category": "scenario",
+      "front": "Create PVC 'pvc-logs' requesting 1Gi, access ReadWriteMany",
+      "back": "kubectl create pvc pvc-logs --access-mode=ReadWriteMany --storage-class=manual --capacity=1Gi"
+    },
+    {
+      "id": 61,
+      "category": "scenario",
+      "front": "Create Role 'pod-reader' with get,list,watch pods in namespace 'dev'",
+      "back": "kubectl create role pod-reader --verb=get,list,watch --resource=pods -n dev"
+    },
+    {
+      "id": 62,
+      "category": "scenario",
+      "front": "Create RoleBinding ' jane-pods' binding role 'pod-reader' to user 'jane'",
+      "back": "kubectl create rolebinding jane-pods --role=pod-reader --user=jane -n dev"
+    },
+    {
+      "id": 63,
+      "category": "scenario",
+      "front": "Debug pod 'crasher' in CrashLoopBackOff",
+      "back": "kubectl describe pod crasher\nkubectl logs crasher\nkubectl logs crasher --previous\nCheck events, image, command, ports."
+    },
+    {
+      "id": 64,
+      "category": "scenario",
+      "front": "Create Ingress 'web-ing' routing web.example.com to service 'web-svc' on port 80",
+      "back": "kubectl create ingress web-ing --class=nginx --rule='web.example.com/*=web-svc:80'"
+    },
+    {
+      "id": 65,
+      "category": "scenario",
+      "front": "Schedule pod on node with label 'env=production' using nodeSelector",
+      "back": "kubectl run test --image=nginx --restart=Never --dry-run=client -o yaml | kubectl apply -f -\nAdd nodeSelector: {env: production}"
+    },
+    {
+      "id": 66,
+      "category": "scenario",
+      "front": "Taint node 'worker1' with key=dedicated, value=worker, effect=NoSchedule",
+      "back": "kubectl taint nodes worker1 dedicated=worker:NoSchedule"
+    },
+    {
+      "id": 67,
+      "category": "scenario",
+      "front": "Add toleration to pod for taint 'dedicated=worker:NoSchedule'",
+      "back": "Edit pod YAML to add:\ntolerations:\n- key: dedicated\n  operator: Equal\n  value: worker\n  effect: NoSchedule"
+    },
+    {
+      "id": 68,
+      "category": "scenario",
+      "front": "Create ConfigMap 'app-config' with key=log_level, value=debug",
+      "back": "kubectl create configmap app-config --from-literal=log_level=debug"
+    },
+    {
+      "id": 69,
+      "category": "scenario",
+      "front": "Create secret 'db-secret' with key=password, value=secret123",
+      "back": "kubectl create secret generic db-secret --from-literal=password=secret123"
+    },
+    {
+      "id": 70,
+      "category": "scenario",
+      "front": "List all events sorted by most recent first",
+      "back": "kubectl get events -A --sort-by='.lastTimestamp'"
+    }
+  ]
+}

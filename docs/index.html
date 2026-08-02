@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKA Flashcards</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+        .stat-value { font-size: 1.5rem; font-weight: bold; }
+        .stat-label { font-size: 0.75rem; opacity: 0.9; }
+        .filters {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .filter-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .filter-btn.active {
+            background: white;
+            color: #667eea;
+        }
+        .card-container {
+            perspective: 1000px;
+            height: 280px;
+            margin-bottom: 20px;
+        }
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .card-category {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+        .card-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #333;
+        }
+        .card-back .card-text {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        .hint {
+            position: absolute;
+            bottom: 15px;
+            font-size: 0.8rem;
+            color: #999;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-again { background: #ef4444; color: white; }
+        .btn-hard { background: #f59e0b; color: white; }
+        .btn-good { background: #22c55e; color: white; }
+        .btn-easy { background: #3b82f6; color: white; }
+        .skip-btn {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+        }
+        .done {
+            text-align: center;
+            color: white;
+        }
+        .done h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .done-btn {
+            background: white;
+            color: #667eea;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 CKA Flashcards</h1>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="dueCount">0</div>
+                <div class="stat-label">Due</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="reviewedCount">0</div>
+                <div class="stat-label">Reviewed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="mastery">0%</div>
+                <div class="stat-label">Mastery</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="due">Due</button>
+            <button class="filter-btn" data-filter="command">Commands</button>
+            <button class="filter-btn" data-filter="concept">Concepts</button>
+            <button class="filter-btn" data-filter="scenario">Scenarios</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div id="cardArea">
+            <div class="card-container">
+                <div class="card" id="card">
+                    <div class="card-face card-front">
+                        <span class="card-category" id="cardCategory">command</span>
+                        <p class="card-text" id="cardText">Loading...</p>
+                        <span class="hint">Tap to flip</span>
+                    </div>
+                    <div class="card-face card-back">
+                        <span class="card-category" id="cardCategoryBack">command</span>
+                        <p class="card-text" id="cardBack">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls" id="controls">
+                <button class="btn btn-again" data-quality="1">Again</button>
+                <button class="btn btn-hard" data-quality="3">Hard</button>
+                <button class="btn btn-good" data-quality="4">Good</button>
+                <button class="btn btn-easy" data-quality="5">Easy</button>
+            </div>
+        </div>
+
+        <div id="doneArea" class="done" style="display: none;">
+            <h2>🎉 Done!</h2>
+            <p>Come back later for more reviews.</p>
+            <br>
+            <button class="done-btn" onclick="location.reload()">Start Over</button>
+            <button class="done-btn" id="resetBtn">Reset Progress</button>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let cards = [];
+        let currentCard = null;
+        let currentIndex = 0;
+        let currentFilter = 'all';
+        let reviewedCards = [];
+
+        // Spaced repetition (SuperMemo-2 simplified)
+        function calculateNextReview(quality, previous) {
+            const minEase = 1.3;
+            let ease = previous.ease || 2.5;
+            let interval = previous.interval || 1;
+
+            // Update ease factor
+            ease = ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+            ease = Math.max(minEase, ease);
+
+            // Update interval
+            if (quality < 3) {
+                interval = 1; // Failed, restart
+            } else if (interval === 1) {
+                interval = 6; // First success -> 6 hours
+            } else {
+                interval = Math.round(interval * ease);
+            }
+
+            const now = Date.now();
+            const nextReview = now + (interval * 60 * 60 * 1000);
+
+            return { ease, interval, nextReview, lastReviewed: now, quality };
+        }
+
+        // Load cards
+        async function loadCards() {
+            const response = await fetch('cards.json');
+            const data = await response.json();
+            cards = data.cards.map(card => {
+                const saved = JSON.parse(localStorage.getItem(`card_${card.id}`)) || {};
+                return {
+                    ...card,
+                    ease: saved.ease || 2.5,
+                    interval: saved.interval || 1,
+                    nextReview: saved.nextReview || 0,
+                    lastReviewed: saved.lastReviewed || 0,
+                    quality: saved.quality || 0
+                };
+            });
+            updateStats();
+            showNextCard();
+        }
+
+        // Save card progress
+        function saveCard(card) {
+            localStorage.setItem(`card_${card.id}`, JSON.stringify({
+                ease: card.ease,
+                interval: card.interval,
+                nextReview: card.nextReview,
+                lastReviewed: card.lastReviewed,
+                quality: card.quality
+            }));
+        }
+
+        // Get filtered cards
+        function getFilteredCards() {
+            const now = Date.now();
+            switch (currentFilter) {
+                case 'due':
+                    return cards.filter(c => c.nextReview <= now);
+                case 'command':
+                case 'concept':
+                case 'scenario':
+                    return cards.filter(c => c.category === currentFilter && c.nextReview <= now);
+                default:
+                    return cards.filter(c => c.nextReview <= now);
+            }
+        }
+
+        // Show next card
+        function showNextCard() {
+            const filtered = getFilteredCards();
+
+            if (filtered.length === 0) {
+                document.getElementById('cardArea').style.display = 'none';
+                document.getElementById('doneArea').style.display = 'block';
+                return;
+            }
+
+            currentIndex = reviewedCards.length % filtered.length;
+            currentCard = filtered[currentIndex];
+
+            document.getElementById('cardCategory').textContent = currentCard.category;
+            document.getElementById('cardCategoryBack').textContent = currentCard.category;
+            document.getElementById('cardText').textContent = currentCard.front;
+            document.getElementById('cardBack').textContent = currentCard.back;
+
+            // Reset card state
+            document.getElementById('card').classList.remove('flipped');
+            document.getElementById('controls').style.display = 'flex';
+
+            updateProgress(filtered.length);
+        }
+
+        // Flip card
+        document.getElementById('card').addEventListener('click', (e) => {
+            if (e.target.id === 'card') {
+                document.getElementById('card').classList.toggle('flipped');
+            }
+        });
+
+        // Handle rating
+        document.getElementById('controls').addEventListener('click', (e) => {
+            if (e.target.dataset.quality) {
+                const quality = parseInt(e.target.dataset.quality);
+                const review = calculateNextReview(quality, currentCard);
+
+                // Update card
+                const cardIndex = cards.findIndex(c => c.id === currentCard.id);
+                cards[cardIndex] = { ...currentCard, ...review };
+                currentCard = cards[cardIndex];
+                saveCard(currentCard);
+                reviewedCards.push(currentCard.id);
+
+                // Update stats
+                updateStats();
+                showNextCard();
+            }
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                reviewedCards = [];
+                document.getElementById('cardArea').style.display = 'block';
+                document.getElementById('doneArea').style.display = 'none';
+                showNextCard();
+            });
+        });
+
+        // Update stats
+        function updateStats() {
+            const now = Date.now();
+            const due = cards.filter(c => c.nextReview <= now).length;
+            const mastered = cards.filter(c => c.interval >= 6).length;
+            const totalReviewed = cards.filter(c => c.lastReviewed > 0).length;
+
+            document.getElementById('dueCount').textContent = due;
+            document.getElementById('reviewedCount').textContent = totalReviewed;
+            document.getElementById('mastery').textContent = Math.round((mastered / cards.length) * 100) + '%';
+        }
+
+        // Update progress
+        function updateProgress(total) {
+            const progress = (reviewedCards.length / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Reset progress
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (confirm('Reset all progress?')) {
+                cards.forEach(c => localStorage.removeItem(`card_${c.id}`));
+                location.reload();
+            }
+        });
+
+        // Init
+        loadCards();
+    </script>
+</body>
+</html>
