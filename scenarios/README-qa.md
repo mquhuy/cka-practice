@@ -11,6 +11,7 @@ All your questions and answers from practice sessions, organized by scenario.
 | [03-qa.md](03-qa.md) | Node maintenance, cordon, drain, DaemonSets |
 | [09-qa.md](09-qa.md) | Scheduling, node affinity, taints, tolerations |
 | [services-qa.md](services-qa.md) | Services, ports, NodePort vs ClusterIP |
+| [storage-qa.md](storage-qa.md) | Volumes, emptyDir, PV, PVC |
 | [general-qa.md](general-qa.md) | Exam format, grading, cleanup, tips |
 
 ## Quick Reference
@@ -41,6 +42,12 @@ kubectl cordon <node>     # Mark unschedulable
 kubectl drain <node>     # Evict pods
 kubectl uncordon <node>   # Make schedulable
 ```
+
+### Storage
+- **emptyDir**: Temporary, pod-scoped, deleted when pod dies
+- **hostPath**: Node file system (not recommended for prod)
+- **PV/PVC**: Persistent storage
+- **StorageClass**: Dynamic provisioning
 
 ### Common Issues
 - `create svc` doesn't specify NodePort → use `expose`
