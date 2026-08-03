@@ -59,6 +59,14 @@ get_scenario() {
         13|13) echo "resources|Resource Limits|5|Set requests and limits on pods" ;;
         14|14) echo "init-containers|Init Containers|6|Multi-stage pod startup" ;;
         15|15) echo "pdb|PodDisruptionBudget|7|Configure PDB for high availability" ;;
+        16|16) echo "probes|Probes|6|Liveness, readiness, startup probes" ;;
+        17|17) echo "hpa|HPA|6|Horizontal Pod Autoscaler configuration" ;;
+        18|18) echo "statefulset|StatefulSet|8|StatefulSet with headless service and PVCs" ;;
+        19|19) echo "storage-class|StorageClass|5|Dynamic provisioning with StorageClass" ;;
+        20|20) echo "service-accounts|ServiceAccounts|6|ServiceAccount integration with RBAC" ;;
+        21|21) echo "coredns|CoreDNS|6|DNS resolution and service discovery" ;;
+        22|22) echo "advanced-netpol|Advanced NetworkPolicy|7|Deny-all, namespace isolation" ;;
+        23|23) echo "rolling-update|Rolling Update|6|RollingUpdate strategy configuration" ;;
         *) echo "" ;;
     esac
 }
@@ -216,7 +224,7 @@ save_submission() {
 
 # Random scenario
 random_scenario() {
-    local random_id=$((RANDOM % 15 + 1))
+    local random_id=$((RANDOM % 23 + 1))
     run_scenario "$random_id"
 }
 
