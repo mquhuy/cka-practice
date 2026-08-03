@@ -419,6 +419,186 @@
       "category": "scenario",
       "front": "List all events sorted by most recent first",
       "back": "kubectl get events -A --sort-by='.lastTimestamp'"
+    },
+    {
+      "id": 71,
+      "category": "command",
+      "front": "Create Horizontal Pod Autoscaler with CPU target",
+      "back": "kubectl autoscale deployment myapp --min=2 --max=5 --cpu-percent=70"
+    },
+    {
+      "id": 72,
+      "category": "command",
+      "front": "Create ServiceAccount for pod",
+      "back": "kubectl create serviceaccount my-sa"
+    },
+    {
+      "id": 73,
+      "category": "command",
+      "front": "Create Job that runs once",
+      "back": "kubectl create job pi-job --image=perl:5.34 -- perl -Mbignum=bpi -wle 'print bpi(2000)'"
+    },
+    {
+      "id": 74,
+      "category": "command",
+      "front": "Check HPA status and metrics",
+      "back": "kubectl get hpa\nkubectl describe hpa <name>"
+    },
+    {
+      "id": 75,
+      "category": "command",
+      "front": "Get pods resource usage",
+      "back": "kubectl top pods"
+    },
+    {
+      "id": 76,
+      "category": "command",
+      "front": "Check pod DNS resolution",
+      "back": "kubectl exec <pod> -- nslookup kubernetes.default"
+    },
+    {
+      "id": 77,
+      "category": "command",
+      "front": "List all StorageClasses",
+      "back": "kubectl get sc"
+    },
+    {
+      "id": 78,
+      "category": "command",
+      "front": "Check StatefulSet status",
+      "back": "kubectl get statefulset\nkubectl get pods -l app=<appname>"
+    },
+    {
+      "id": 79,
+      "category": "command",
+      "front": "Scale StatefulSet to 5 replicas",
+      "back": "kubectl scale statefulset web --replicas=5"
+    },
+    {
+      "id": 80,
+      "category": "concept",
+      "front": "What is a liveness probe?",
+      "back": "Checks if container is alive. Fails → container restarted. httpGet, tcpSocket, or exec command."
+    },
+    {
+      "id": 81,
+      "category": "concept",
+      "front": "What is a readiness probe?",
+      "back": "Checks if container ready to serve traffic. Fails → pod removed from Service. Prevents unready pods receiving traffic."
+    },
+    {
+      "id": 82,
+      "category": "concept",
+      "front": "What is a startup probe?",
+      "back": "For slow-start containers. Disables liveness/readiness until it succeeds. Prevents killing slow-starting apps."
+    },
+    {
+      "id": 83,
+      "category": "concept",
+      "front": "What is HPA?",
+      "back": "Horizontal Pod Autoscaler. Automatically scales deployment based on CPU/memory/metrics. Requires metrics-server + resource requests."
+    },
+    {
+      "id": 84,
+      "category": "concept",
+      "front": "What is a ServiceAccount?",
+      "back": "Identity for pods to authenticate with API server. Mounted at /var/run/secrets/kubernetes.io/serviceaccount/. Links to RBAC for permissions."
+    },
+    {
+      "id": 85,
+      "category": "concept",
+      "front": "What is CoreDNS?",
+      "back": "Cluster DNS service. Provides service discovery. Runs in kube-system. Service DNS: <service>.<namespace>.svc.cluster.local"
+    },
+    {
+      "id": 86,
+      "category": "concept",
+      "front": "What is StorageClass?",
+      "back": "Defines storage provisioner and parameters. Enables dynamic PV provisioning. Pods use PVC, cluster auto-creates PV."
+    },
+    {
+      "id": 87,
+      "category": "concept",
+      "front": "What is headless service?",
+      "back": "Service with clusterIP: None. DNS returns all pod IPs directly. Required for StatefulSet stable networking."
+    },
+    {
+      "id": 88,
+      "category": "concept",
+      "front": "What is maxSurge in RollingUpdate?",
+      "back": "Max pods created above replica count during update. Can be percentage or number. Default: 25%."
+    },
+    {
+      "id": 89,
+      "category": "concept",
+      "front": "What is maxUnavailable in RollingUpdate?",
+      "back": "Max pods allowed down during update. Can be percentage or number. Default: 25%."
+    },
+    {
+      "id": 90,
+      "category": "concept",
+      "front": "StatefulSet vs Deployment?",
+      "back": "StatefulSet: ordered deployment, stable network IDs, stable storage per pod. Deployment: parallel, no stable IDs, shared storage."
+    },
+    {
+      "id": 91,
+      "category": "scenario",
+      "front": "Create HPA for deployment 'api' with min=2, max=5, CPU=70%",
+      "back": "kubectl autoscale deployment api --min=2 --max=5 --cpu-percent=70"
+    },
+    {
+      "id": 92,
+      "category": "scenario",
+      "front": "Create pod with liveness probe (HTTP / port 80)",
+      "back": "livenessProbe:\n  httpGet:\n    path: /\n    port: 80\n  initialDelaySeconds: 5"
+    },
+    {
+      "id": 93,
+      "category": "scenario",
+      "front": "Create StatefulSet 'web' with 3 replicas, headless service",
+      "back": "kubectl apply -f - <<EOF\napiVersion: v1\nkind: Service\nmetadata:\n  name: web\nspec:\n  clusterIP: None\n  selector:\n    app: nginx\n  ports:\n  - port: 80\n---\napiVersion: apps/v1\nkind: StatefulSet\nmetadata:\n  name: web\nspec:\n  serviceName: web\n  replicas: 3\n  selector:\n    matchLabels:\n      app: nginx\n  template:\n    metadata:\n      labels:\n        app: nginx\n    spec:\n      containers:\n      - name: nginx\n        image: nginx\nEOF"
+    },
+    {
+      "id": 94,
+      "category": "scenario",
+      "front": "Create PVC using StorageClass 'standard'",
+      "back": "kubectl apply -f - <<EOF\napiVersion: v1\nkind: PersistentVolumeClaim\nmetadata:\n  name: dynamic-pvc\nspec:\n  storageClassName: standard\n  accessModes:\n  - ReadWriteOnce\n  resources:\n    requests:\n      storage: 1Gi\nEOF"
+    },
+    {
+      "id": 95,
+      "category": "scenario",
+      "front": "Create RoleBinding linking SA 'pod-sa' to Role 'pod-role'",
+      "back": "kubectl create rolebinding pod-rb --role=pod-role --serviceaccount=default:pod-sa"
+    },
+    {
+      "id": 96,
+      "category": "scenario",
+      "front": "Create NetworkPolicy denying all ingress/egress in namespace",
+      "back": "kubectl apply -f - <<EOF\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: deny-all\n  namespace: backend\nspec:\n  podSelector: {}\n  policyTypes:\n  - Ingress\n  - Egress\nEOF"
+    },
+    {
+      "id": 97,
+      "category": "scenario",
+      "front": "Backup etcd to /tmp/etcd-backup.db",
+      "back": "ETCDCTL_API=3 etcdctl snapshot save /tmp/etcd-backup.db \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/server.crt \\\n  --key=/etc/kubernetes/pki/etcd/server.key"
+    },
+    {
+      "id": 98,
+      "category": "scenario",
+      "front": "Set deployment strategy maxSurge=1, maxUnavailable=0",
+      "back": "kubectl patch deployment <name> -p '{\"spec\":{\"strategy\":{\"rollingUpdate\":{\"maxSurge\":1,\"maxUnavailable\":0}}}}'"
+    },
+    {
+      "id": 99,
+      "category": "scenario",
+      "front": "Create PodDisruptionBudget minAvailable=2 for deployment",
+      "back": "kubectl apply -f - <<EOF\napiVersion: policy/v1\nkind: PodDisruptionBudget\nmetadata:\n  name: web-pdb\nspec:\n  minAvailable: 2\n  selector:\n    matchLabels:\n      app: web\nEOF"
+    },
+    {
+      "id": 100,
+      "category": "scenario",
+      "front": "Test DNS from pod: resolve kubernetes.default",
+      "back": "kubectl run test --image=busybox --rm -it -- nslookup kubernetes.default.svc.cluster.local"
     }
   ]
 }
