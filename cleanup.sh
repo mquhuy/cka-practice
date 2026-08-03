@@ -17,7 +17,7 @@ for ns in $USER_NAMESPACES; do
     # Skip if namespace doesn't exist
     if kubectl --context="$CLUSTER_CTX" get namespace "$ns" &>/dev/null; then
         echo "  Cleaning: $ns"
-        kubectl --context="$CLUSTER_CTX" delete pods,deployments,services,ingress,networkpolicies,pvc,configmap,secret,jobs,cronjobs,statefulsets,daemonsets,rolebindings,roles -n "$ns" --all --ignore-not-found=true 2>/dev/null
+        kubectl --context="$CLUSTER_CTX" delete pods,deployments,services,ingress,networkpolicies,pvc,configmap,secret,jobs,cronjobs,statefulsets,daemonsets,rolebindings,roles,serviceaccounts,horizontalpodautoscaler -n "$ns" --all --ignore-not-found=true 2>/dev/null
     fi
 done
 
