@@ -54,6 +54,11 @@ get_scenario() {
         08|8) echo "ingress|Ingress|6|Create Ingress with host routing" ;;
         09|9) echo "scheduling|Scheduling|6|Node affinity, taints, tolerations" ;;
         10)    echo "configmap|ConfigMap|4|ConfigMap with volume mount" ;;
+        11|11) echo "jobs|Jobs & CronJobs|6|Create Job and CronJob with schedules" ;;
+        12|12) echo "etcd-backup|etcd Backup|8|Backup etcd snapshot, restore practice" ;;
+        13|13) echo "resources|Resource Limits|5|Set requests and limits on pods" ;;
+        14|14) echo "init-containers|Init Containers|6|Multi-stage pod startup" ;;
+        15|15) echo "pdb|PodDisruptionBudget|7|Configure PDB for high availability" ;;
         *) echo "" ;;
     esac
 }
@@ -62,7 +67,7 @@ get_scenario() {
 list_scenarios() {
     echo -e "\n${BLUE}Available Scenarios:${NC}\n"
 
-    for i in 1 2 3 4 5 6 7 8 9 10; do
+    for i in {1..15}; do
         local id=$(printf "%02d" $i)
         local info=$(get_scenario $id)
         IFS='|' read -r key name time desc <<< "$info"
@@ -211,7 +216,7 @@ save_submission() {
 
 # Random scenario
 random_scenario() {
-    local random_id=$((RANDOM % 10 + 1))
+    local random_id=$((RANDOM % 15 + 1))
     run_scenario "$random_id"
 }
 
