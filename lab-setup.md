@@ -9,7 +9,7 @@
 ## Daily Startup
 ```bash
 # Start cluster if stopped
-kind start cka-practice 2>/dev/null || kind create cluster --config=kind-cluster.yaml --name=cka-practice
+kind start cka-practice 2>/dev/null || kind create cluster --config=kind-cluster.yaml
 
 # Set context
 kubectl config use-context kind-cka-practice

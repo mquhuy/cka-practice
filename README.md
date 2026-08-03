@@ -34,7 +34,7 @@ git clone https://github.com/YOUR_USERNAME/cka-practice.git
 cd cka-practice
 
 # Create cluster
-kind create cluster --config=kind-cluster.yaml --name=cka-practice
+kind create cluster --config=kind-cluster.yaml
 
 # Verify
 kubectl --context=kind-cka-practice get nodes
