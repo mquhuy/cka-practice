@@ -120,12 +120,17 @@ show_task() {
     fi
 }
 
-# Cleanup cluster
+# Cleanup cluster (safe - only user namespaces)
 cleanup_cluster() {
     echo -e "\n${BLUE}Cleaning cluster...${NC}"
-    kubectl --context="$CLUSTER_CTX" delete pods,deployments,services,ingress,networkpolicies,pvc,pv,configmap,secret --all -A --ignore-not-found=true 2>/dev/null || true
-    kubectl --context="$CLUSTER_CTX" delete rolebindings,roles,clusterrolebindings,clusterroles --all-namespaces --ignore-not-found=true 2>/dev/null || true
-    echo -e "${GREEN}✓ Cleaned${NC}"
+    local safe_namespaces="default frontend backend development prod storage logging monitoring"
+    for ns in $safe_namespaces; do
+        kubectl --context="$CLUSTER_CTX" delete pods,deployments,services,ingress,networkpolicies,pvc,pv,configmap,secret --all -n "$ns" --ignore-not-found=true 2>/dev/null || true
+        kubectl --context="$CLUSTER_CTX" delete rolebindings,roles -n "$ns" --ignore-not-found=true 2>/dev/null || true
+    done
+    # ClusterRoles/ClusterBindings live at cluster level, delete explicitly by name only
+    kubectl --context="$CLUSTER_CTX" delete clusterrolebinding,clusterrole --all --ignore-not-found=true 2>/dev/null || true
+    echo -e "${GREEN}✓ Cleaned (safe namespaces only)${NC}"
 }
 
 # Run single scenario
