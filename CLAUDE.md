@@ -72,7 +72,8 @@ Include code examples and commands where helpful.
 - ✅ Scenario 01: Deployments
 - ✅ Scenario 02: Multi-container pods
 - ✅ Scenario 03: Node maintenance
-- ⏳ Scenarios 04-10: Pending
+- ✅ Scenario 04: NetworkPolicy
+- ⏳ Scenarios 05-10: Pending
 
 ## Key Concepts Covered
 
