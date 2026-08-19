@@ -175,6 +175,94 @@ cleanup_scenario() {
             kubectl --context="$CLUSTER_CTX" taint nodes cka-practice-worker dedicated- --ignore-not-found=true 2>/dev/null || true
             kubectl --context="$CLUSTER_CTX" delete pod prod-app --ignore-not-found=true 2>/dev/null || true
             ;;
+        05)
+            # PV/PVC: delete pv, pvc
+            kubectl --context="$CLUSTER_CTX" delete pv logs-pv --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pvc logs-pvc --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pvc dynamic-pvc --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pod storage-pod --ignore-not-found=true 2>/dev/null || true
+            ;;
+        06)
+            # RBAC: delete ns, role, rolebinding
+            kubectl --context="$CLUSTER_CTX" delete namespace development --ignore-not-found=true 2>/dev/null || true
+            ;;
+        07)
+            # Troubleshooting: delete broken pod
+            kubectl --context="$CLUSTER_CTX" delete pod broken --ignore-not-found=true 2>/dev/null || true
+            ;;
+        10)
+            # ConfigMap: delete cm, pod
+            kubectl --context="$CLUSTER_CTX" delete configmap app-config --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pod config-test --ignore-not-found=true 2>/dev/null || true
+            ;;
+        11)
+            # Jobs/CronJobs: delete job, cj, pods
+            kubectl --context="$CLUSTER_CTX" delete job pi-job --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete cj hello-cj --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pods -l app=hello --ignore-not-found=true 2>/dev/null || true
+            ;;
+        12)
+            # etcd backup: no cluster resources to clean
+            # Backup file on control plane: /tmp/etcd-backup.db (manual cleanup if needed)
+            ;;
+        13)
+            # Resource limits: delete pods
+            kubectl --context="$CLUSTER_CTX" delete pod resource-pod --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pod guaranteed-pod --ignore-not-found=true 2>/dev/null || true
+            ;;
+        14)
+            # Init containers: delete pods
+            kubectl --context="$CLUSTER_CTX" delete pod init-pod --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pod multi-init-pod --ignore-not-found=true 2>/dev/null || true
+            ;;
+        15)
+            # PDB: delete deployment, pdb
+            kubectl --context="$CLUSTER_CTX" delete deployment web-app --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pdb web-pdb --ignore-not-found=true 2>/dev/null || true
+            ;;
+        16)
+            # Probes: delete pod
+            kubectl --context="$CLUSTER_CTX" delete pod probe-pod --ignore-not-found=true 2>/dev/null || true
+            ;;
+        17)
+            # HPA: delete deployment, hpa
+            kubectl --context="$CLUSTER_CTX" delete deployment test-app --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete hpa test-hpa --ignore-not-found=true 2>/dev/null || true
+            ;;
+        18)
+            # StatefulSet: delete sts, svc, pvc
+            kubectl --context="$CLUSTER_CTX" delete statefulset web --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete service web --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pvc -l app=web --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pod web-0 web-1 web-2 --ignore-not-found=true 2>/dev/null || true
+            ;;
+        19)
+            # StorageClass: delete pvc, pod
+            kubectl --context="$CLUSTER_CTX" delete pvc dynamic-pvc --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pod storage-pod --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pv --all --ignore-not-found=true 2>/dev/null || true
+            ;;
+        20)
+            # ServiceAccounts: delete sa, role, rolebinding, pod
+            kubectl --context="$CLUSTER_CTX" delete sa pod-sa --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete role pod-role --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete rolebinding pod-rolebinding --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pod sa-test-pod --ignore-not-found=true 2>/dev/null || true
+            ;;
+        21)
+            # CoreDNS: delete debug pod
+            kubectl --context="$CLUSTER_CTX" delete pod dns-debug --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete namespace backend --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete netpol --all -n backend --ignore-not-found=true 2>/dev/null || true
+            ;;
+        22)
+            # Advanced NetworkPolicy: delete ns, policies
+            kubectl --context="$CLUSTER_CTX" delete namespace backend --ignore-not-found=true 2>/dev/null || true
+            ;;
+        23)
+            # Rolling Update: delete deployment
+            kubectl --context="$CLUSTER_CTX" delete deployment rolling-app --ignore-not-found=true 2>/dev/null || true
+            ;;
         *)
             # Fallback: safe general cleanup
             cleanup_cluster
