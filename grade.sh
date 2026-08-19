@@ -173,9 +173,75 @@ grade_08() {
     return $score
 }
 
+# Grade scenario 09
+grade_09() {
+    local score=0
+    local total=5
+
+    echo -e "${YELLOW}Task 1: Label cka-practice-worker as env=prod${NC}"
+    worker1_label=$(kubectl --context="$CONTEXT" get node cka-practice-worker -o jsonpath='{.metadata.labels.env}' 2>/dev/null)
+    if [ "$worker1_label" = "prod" ]; then
+        echo -e "  ${GREEN}✓${NC} cka-practice-worker labeled env=prod"
+        score=$((score + 1))
+    else
+        echo -e "  ${RED}✗${NC} cka-practice-worker label: $worker1_label (expected prod)"
+    fi
+
+    echo -e "${YELLOW}Task 2: Label cka-practice-worker2 as env=dev${NC}"
+    worker2_label=$(kubectl --context="$CONTEXT" get node cka-practice-worker2 -o jsonpath='{.metadata.labels.env}' 2>/dev/null)
+    if [ "$worker2_label" = "dev" ]; then
+        echo -e "  ${GREEN}✓${NC} cka-practice-worker2 labeled env=dev"
+        score=$((score + 1))
+    else
+        echo -e "  ${RED}✗${NC} cka-practice-worker2 label: $worker2_label (expected dev)"
+    fi
+
+    echo -e "${YELLOW}Task 3: Create pod prod-app with nodeSelector env=prod${NC}"
+    if kubectl --context="$CONTEXT" get pod prod-app &>/dev/null; then
+        node_selector=$(kubectl --context="$CONTEXT" get pod prod-app -o jsonpath='{.spec.nodeSelector.env}' 2>/dev/null)
+        pod_node=$(kubectl --context="$CONTEXT" get pod prod-app -o jsonpath='{.spec.nodeName}' 2>/dev/null)
+        if [ "$node_selector" = "prod" ] && [ "$pod_node" = "cka-practice-worker" ]; then
+            echo -e "  ${GREEN}✓${NC} prod-app uses nodeSelector env=prod, running on cka-practice-worker"
+            score=$((score + 1))
+        else
+            echo -e "  ${RED}✗${NC} nodeSelector: $node_selector, running on: $pod_node"
+        fi
+    else
+        echo -e "  ${RED}✗${NC} Pod 'prod-app' not found"
+    fi
+
+    echo -e "${YELLOW}Task 4: Taint prod node with dedicated=prod:NoSchedule${NC}"
+    taints=$(kubectl --context="$CONTEXT" get node cka-practice-worker -o jsonpath='{.spec.taints}' 2>/dev/null)
+    if echo "$taints" | grep -q "dedicated.*prod.*NoSchedule"; then
+        echo -e "  ${GREEN}✓${NC} cka-practice-worker tainted with dedicated=prod:NoSchedule"
+        score=$((score + 1))
+    else
+        echo -e "  ${RED}✗${NC} Taint not found or incorrect"
+    fi
+
+    echo -e "${YELLOW}Task 5: Create pod with toleration for dedicated=prod:NoSchedule${NC}"
+    # Check for any pod with toleration (name varies)
+    tolerant_pod=$(kubectl --context="$CONTEXT" get pods -o jsonpath='{.items[?(@.spec.tolerations[*].key=="dedicated")].metadata.name}' 2>/dev/null | head -1)
+    if [ -n "$tolerant_pod" ]; then
+        toleration=$(kubectl --context="$CONTEXT" get pod "$tolerant_pod" -o jsonpath='{.spec.tolerations[0].key}' 2>/dev/null)
+        echo -e "  ${GREEN}✓${NC} Pod '$tolerant_pod' has toleration for key: $toleration"
+        score=$((score + 1))
+    else
+        echo -e "  ${RED}✗${NC} No pod found with toleration for 'dedicated' taint"
+    fi
+
+    echo ""
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "Score: ${GREEN}$score${NC} / $total"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+    return $score
+}
+
 # Route to appropriate grader
 case "$scenario_id" in
     01|1) grade_01 ;;
     08|8) grade_08 ;;
+    09|9) grade_09 ;;
     *) echo "Grader for scenario $scenario_id not yet implemented" ;;
 esac
