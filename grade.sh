@@ -106,8 +106,76 @@ grade_01() {
     return $score
 }
 
+# Grade scenario 08
+grade_08() {
+    local score=0
+    local total=4
+
+    echo -e "${YELLOW}Task 1: Create deployment web (nginx:alpine, 2 replicas)${NC}"
+    if kubectl --context="$CONTEXT" get deployment web &>/dev/null; then
+        replicas=$(kubectl --context="$CONTEXT" get deployment web -o jsonpath='{.spec.replicas}')
+        image=$(kubectl --context="$CONTEXT" get deployment web -o jsonpath='{.spec.template.spec.containers[0].image}')
+        if [ "$replicas" -ge 2 ] && [[ "$image" == *"nginx"*"alpine"* ]]; then
+            echo -e "  ${GREEN}✓${NC} Deployment exists with correct image and $replicas replicas"
+            score=$((score + 1))
+        else
+            echo -e "  ${RED}✗${NC} Deployment exists but: replicas=$replicas, image=$image"
+        fi
+    else
+        echo -e "  ${RED}✗${NC} Deployment 'web' not found"
+    fi
+
+    echo -e "${YELLOW}Task 2: Create ClusterIP service web-svc on port 80${NC}"
+    if kubectl --context="$CONTEXT" get svc web-svc &>/dev/null; then
+        svc_type=$(kubectl --context="$CONTEXT" get svc web-svc -o jsonpath='{.spec.type}')
+        svc_port=$(kubectl --context="$CONTEXT" get svc web-svc -o jsonpath='{.spec.ports[0].port}')
+        if [ "$svc_type" = "ClusterIP" ] && [ "$svc_port" = "80" ]; then
+            echo -e "  ${GREEN}✓${NC} Service correct: type=$svc_type, port=$svc_port"
+            score=$((score + 1))
+        else
+            echo -e "  ${RED}✗${NC} Service exists but: type=$svc_type, port=$svc_port"
+        fi
+    else
+        echo -e "  ${RED}✗${NC} Service 'web-svc' not found"
+    fi
+
+    echo -e "${YELLOW}Task 3: Create Ingress web-ing${NC}"
+    if kubectl --context="$CONTEXT" get ingress web-ing &>/dev/null; then
+        host=$(kubectl --context="$CONTEXT" get ingress web-ing -o jsonpath='{.spec.rules[0].host}')
+        if [ "$host" = "web.example.com" ]; then
+            echo -e "  ${GREEN}✓${NC} Ingress exists with host: $host"
+            score=$((score + 1))
+        else
+            echo -e "  ${RED}✗${NC} Ingress exists but host: $host (expected web.example.com)"
+        fi
+    else
+        echo -e "  ${RED}✗${NC} Ingress 'web-ing' not found"
+    fi
+
+    echo -e "${YELLOW}Task 4: IngressClassName is nginx${NC}"
+    if kubectl --context="$CONTEXT" get ingress web-ing &>/dev/null; then
+        ingress_class=$(kubectl --context="$CONTEXT" get ingress web-ing -o jsonpath='{.spec.ingressClassName}')
+        if [ "$ingress_class" = "nginx" ]; then
+            echo -e "  ${GREEN}✓${NC} IngressClassName: $ingress_class"
+            score=$((score + 1))
+        else
+            echo -e "  ${RED}✗${NC} IngressClassName: $ingress_class (expected nginx)"
+        fi
+    else
+        echo -e "  ${RED}✗${NC} Ingress 'web-ing' not found"
+    fi
+
+    echo ""
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "Score: ${GREEN}$score${NC} / $total"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+    return $score
+}
+
 # Route to appropriate grader
 case "$scenario_id" in
     01|1) grade_01 ;;
+    08|8) grade_08 ;;
     *) echo "Grader for scenario $scenario_id not yet implemented" ;;
 esac
