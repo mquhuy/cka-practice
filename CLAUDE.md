@@ -73,7 +73,8 @@ Include code examples and commands where helpful.
 - ✅ Scenario 02: Multi-container pods
 - ✅ Scenario 03: Node maintenance
 - ✅ Scenario 04: NetworkPolicy
-- ⏳ Scenarios 05-10: Pending
+- ✅ Scenario 08: Ingress
+- ⏳ Scenarios 05-07, 09-10: Pending
 
 ## Key Concepts Covered
 
