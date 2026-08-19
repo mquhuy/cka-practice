@@ -127,8 +127,61 @@ cleanup_cluster() {
     local safe_namespaces="frontend backend development prod storage logging monitoring"
     kubectl --context="$CLUSTER_CTX" delete namespace $safe_namespaces --ignore-not-found=true 2>/dev/null || true
     # Clean default ns (can't delete it)
-    kubectl --context="$CLUSTER_CTX" delete pods,deployments,services,ingress,networkpolicies,pvc,configmap,secret -n default --all --ignore-not-found=true 2>/dev/null || true
+    # Exclude kubernetes service (core service)
+    kubectl --context="$CLUSTER_CTX" delete pods,deployments,ingress,networkpolicies,pvc,configmap,secret -n default --all --ignore-not-found=true 2>/dev/null || true
+    # Delete user services only (exclude kubernetes)
+    kubectl --context="$CLUSTER_CTX" delete service -n default -l '!service.kubernetes.io/headless' --ignore-not-found=true 2>/dev/null || true
+    kubectl --context="$CLUSTER_CTX" delete service -n default --all --ignore-not-found=true 2>/dev/null | grep -v kubernetes || true
     echo -e "${GREEN}✓ Cleaned (safe namespaces only)${NC}"
+}
+
+# Per-scenario cleanup - specific and safe
+cleanup_scenario() {
+    local id="$1"
+    echo -e "\n${BLUE}Cleaning scenario $id...${NC}"
+
+    case "$id" in
+        01)
+            # Deployments: web deployment, web-svc
+            kubectl --context="$CLUSTER_CTX" delete deployment web --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete service web-svc --ignore-not-found=true 2>/dev/null || true
+            ;;
+        02)
+            # Multi-container: pods
+            kubectl --context="$CLUSTER_CTX" delete pod app --ignore-not-found=true 2>/dev/null || true
+            ;;
+        03)
+            # Node maintenance: remove labels, untaint, uncordon
+            kubectl --context="$CLUSTER_CTX" label node cka-practice-worker env- --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" label node cka-practice-worker tier- --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" taint nodes cka-practice-worker dedicated- --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" taint nodes cka-practice-worker key- --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" uncordon cka-practice-worker --ignore-not-found=true 2>/dev/null || true
+            ;;
+        04)
+            # NetworkPolicy: namespaces, pods, policies
+            kubectl --context="$CLUSTER_CTX" delete namespace frontend backend --ignore-not-found=true 2>/dev/null || true
+            ;;
+        08)
+            # Ingress: deployment, service, ingress
+            kubectl --context="$CLUSTER_CTX" delete deployment web --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete service web-svc --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete ingress web-ing --ignore-not-found=true 2>/dev/null || true
+            ;;
+        09)
+            # Scheduling: remove node labels, untaint, delete pods
+            kubectl --context="$CLUSTER_CTX" label node cka-practice-worker env- --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" label node cka-practice-worker2 env- --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" taint nodes cka-practice-worker dedicated- --ignore-not-found=true 2>/dev/null || true
+            kubectl --context="$CLUSTER_CTX" delete pod prod-app --ignore-not-found=true 2>/dev/null || true
+            ;;
+        *)
+            # Fallback: safe general cleanup
+            cleanup_cluster
+            return
+            ;;
+    esac
+    echo -e "${GREEN}✓ Cleaned scenario $id${NC}"
 }
 
 # Run single scenario
@@ -193,7 +246,7 @@ run_scenario() {
     echo -e "\n${YELLOW}Cleanup? (y/n):${NC} "
     read -r cleanup
     if [[ "$cleanup" == "y" ]]; then
-        cleanup_cluster
+        cleanup_scenario "$id"
     fi
 }
 
